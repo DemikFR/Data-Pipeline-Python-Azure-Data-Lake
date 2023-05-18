@@ -24,8 +24,14 @@
         <li><a href="#ferramentas">Ferramentas</a></li>
       </ul>
     </li>
-    <li><a href="#iniciar-o-projeto">Iniciar o Projeto</a></li>
+    <li>
+      <a href="#iniciar-o-projeto">Iniciar o Projeto</a>
+      <ul>
+        <li><a href="#preparação-do-azure">Preparação do Azure</a></li>  
+      </ul>
+     </li>
     <li><a href="#extração-dos-dados-web-scraping">Extração dos Dados</a></li>
+    <li><a href="#ingestão-dos-dados">Ingestão dos Dados</a></li>
     <li><a href="#agradecimentos">Agradecimentos</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -66,18 +72,91 @@ Para realizar este projeto, foi usado as seguintes ferramenta:
     pip install azure-mgmt-datalake-store
     pip install azure-datalake-store
    ```
-3. Verifique a sua credencial <i>Tenant</i> ID do Azure necessárias, conforme a <a href="https://learn.microsoft.com/pt-br/azure/active-directory/fundamentals/active-directory-how-to-find-tenant">documentação da Microsoft.</a> e depois coloca-la no código que se encontra no script
+3. Verifique a sua credencial <i>Tenant</i> ID do Azure, conforme a <a href="https://learn.microsoft.com/pt-br/azure/active-directory/fundamentals/active-directory-how-to-find-tenant">documentação da Microsoft.</a> e depois coloque ela no seu código que se encontra no script
    ```py
     adlCreds = lib.auth(tenant_id='YOUR_TENANT_ID', resource = 'https://datalake.azure.net/')
    ```
 
 
+### Preparação do Azure
+
+Para criar o Azure Data Lake Gen1 é importante fazer antes um grupo de recursos do Azure. É fundamental observar que o nome do grupo de recursos não deve conter caracteres especiais, incluindo espaços, e deve ser composto apenas por letras minúsculas. Essa regra de nomenclatura é essencial para garantir a correta configuração e funcionamento do Azure Data Lake Gen1.
+
+![Grupo de Recursos do Azure](https://github.com/DemikFR/Data-Pipeline-Python-Azure-Data-Lake/assets/102700735/db32c397-52ed-4e7c-8ec8-b6017c09f013)
+
+
+Com o grupo de recursos será possível organizar os serviços que tem um mesmo objetivo, neste caso, para analisar as safras de produtos agrícolas brasileiro.
+
+Agora que o Grupo de Recursos foi criado, podemos prosseguir com a criação do Data Lake. Selecione o recurso <i>Data Lake Storage Gen1</i> e, em seguida, forneça as informações necessárias. É importante observar o nome da instância que você está criando, pois esse nome será utilizado para acessar o Data Lake por meio do Python. Certifique-se de escolher um nome significativo e memorável para facilitar o acesso e o gerenciamento do Data Lake posteriormente.
+
+![Criação do Azure Data Lake Storage Gen1](https://github.com/DemikFR/Data-Pipeline-Python-Azure-Data-Lake/assets/102700735/4608592d-c42c-461b-a50b-82dd7cf7e773)
+
+
+Após concluir a criação do Azure Data Lake Gen1, já será possível começar a utilizá-lo.
+
+![Interface Azure Data Lake](https://github.com/DemikFR/Data-Pipeline-Python-Azure-Data-Lake/assets/102700735/04471c09-94d2-43e2-8983-268f36aade0a)
+
+
 
 ## Extração dos Dados (Web Scraping)
 
-Após estudar como os dados estão disponibilizados, foi visto que as bases estão em Excel, mesclando entre o .XLS e .XLSX, além disso, antes de acessar a pagína em que os dados podem ser baixados, existe uma outra página em que separa os datasets em 6 categorias que são <b>Safra de Grãos</b>, <b>Safra de Café</b>, <b>Safra de Cana-de-Açucar</b>, <b>Séries Históricas</b>, <b>Progresso de Safra</b> e <b>Mapeamentos Agrícolas</b>. Em primeiro momento só serão coletados os dados dos 4 primeiros e arquivos XLSX. 
+Após analisar a forma de disponibilização dos dados, foi verificado que as bases estão armazenadas em formatos mistos, sendo tanto em .XLS quanto em .XLSX. Além disso, antes de acessar a página de download dos dados, é necessário passar por outra página que os separa em seis categorias: <b>Safra de Grãos</b>, <b>Safra de Café</b>, <b>Safra de Cana-de-Açúcar</b>, <b>Séries Históricas</b>, <b>Progresso de Safra</b> e <b>Mapeamentos Agrícolas</b>. Inicialmente, será coletar apenas os dados das quatro primeiras categorias, nos formatos .XLSX.
 
 Com a biblioteca Beautiful Soup, será possível realizar o processo de web scraping que automatizará o download e envio dos arquivos de dados ao Azure Data Lake. 
+
+Assim, foi criada uma função que recebe uma URL, no caso a página que dá acesso às categorias dos dados e uma expressão expressão de busca que será aplicada ao atributo "title" do HTML, a fim de encontrar algo semelhante.
+
+   ```py
+    def get_soup(url, search):
+    response = requests.get(url)
+    
+    # Verificar se a conexão foi bem sucedida
+    if response.status_code == 200:
+        soup = bs(response.content, 'html.parser')
+
+        # Retornar as páginas onde terão as de download
+        return soup.find_all('a', href=True, attrs={'title': re.compile(search)}) 
+    else:
+        return f'Página{link["title"]} está inacessível. Código: {response.status_code}'
+   ```
+
+Após a criação da função, foi implementado um loop "for" que percorre a lista de elementos retornados pela função. Em seguida, outro loop é utilizado para realizar uma nova busca por elementos dentro da página acessada com base na primeira lista. Dessa forma, o link de acesso ao dataset é extraído e será posteriormente inserido na função de ingestão de dados, que será detalhada no capítulo dedicado a essa funcionalidade.
+
+   ```py
+    url_base = 'https://www.conab.gov.br'
+
+    url_acesso = 'https://www.conab.gov.br/info-agro/safras'
+
+    lista_repo = get_soup(url_acesso, 'Safra')[0:3]
+
+    for i in lista_repo:
+    
+      # Buscar datasets em cada repositório de dados do Conab
+      link_repo = url_base+i['href'] # Funcionalidade do Python que ajuda a acessar elementos específicos do HTML
+
+      for j in get_soup(link_repo, 'xlsx'):
+
+          # Acessar os dados de cada dataset e inserir no Azure Data Lake
+          link_dataset = url_base+j['href'] # Funcionalidade do Python que ajuda a acessar elementos específicos do HTML
+
+          ingest(adlsFileSystemClient, j['title'], link_dataset)
+   ```
+
+
+
+## Ingestão dos Dados
+
+No momento em que a extração dos dados foi concluída com sucesso, já é possível prosseguir com o processo de ingestão. No entanto, antes de iniciar, é fundamental configurar o ambiente que estabelecerá a conexão com o Azure Data Lake. Após realizar a etapa 3 do <a href="#iniciar-o-projeto">Iniciar o Projeto</a>, deve-se conectar no seu ADL já criado na etapa de <a href="#preparação-do-azure">Preparação do Azure</a> e depois com o código abaixo, usar o nome do ADLGen1.
+   ```py
+    adlsAccountName = 'datalakeminsaitsafras'
+    adlsFileSystemClient = core.AzureDLFileSystem(adlCreds, store_name=adlsAccountName)
+   ```
+   
+A função de ingestão é projetada para receber três parâmetros essenciais. O primeiro parâmetro é o "file_system", que representa o sistema de arquivos atuando como um contêiner no Azure Data Lake (ADL). Como mencionado anteriormente, esse sistema de arquivos foi criado utilizando o código fornecido anteriormente.
+
+O segundo parâmetro é o "file_dl_name", que define o nome do arquivo no Azure Data Lake. Esse parâmetro é crucial para identificar o arquivo específico que será armazenado no Data Lake.
+
+Por fim, o terceiro parâmetro é o "link_file", que no contexto desse pipeline é o link de download do dataset. É por meio desse caminho que a função de ingestão será capaz de localizar o arquivo a ser importado e realizar a operação de ingestão no Azure Data Lake.
 
 
 
