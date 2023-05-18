@@ -1,9 +1,0 @@
-{
-	"name": "DataLakeIngestionMinsait",
-	"location": "eastus",
-	"identity": {
-		"type": "SystemAssigned",
-		"principalId": "8cf796ad-1ebe-4a5e-9da8-edaf88065480",
-		"tenantId": "11dbbfe2-89b8-4549-be10-cec364e59551"
-	}
-}
