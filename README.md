@@ -82,19 +82,20 @@ Para realizar este projeto, foi usado as seguintes ferramenta:
 
 Para criar o Azure Data Lake Gen1 é importante fazer antes um grupo de recursos do Azure. É fundamental observar que o nome do grupo de recursos não deve conter caracteres especiais, incluindo espaços, e deve ser composto apenas por letras minúsculas. Essa regra de nomenclatura é essencial para garantir a correta configuração e funcionamento do Azure Data Lake Gen1.
 
-![Grupo de Recursos do Azure](https://github.com/DemikFR/Data-Pipeline-Python-Azure-Data-Lake/assets/102700735/db32c397-52ed-4e7c-8ec8-b6017c09f013)
+![Grupo de Recursos do Azure](https://github.com/DemikFR/Data-Pipeline-Python-Azure-Data-Lake/assets/102700735/fd60b0fb-6e86-424f-a002-98074dcac679)
 
 
 Com o grupo de recursos será possível organizar os serviços que tem um mesmo objetivo, neste caso, para analisar as safras de produtos agrícolas brasileiro.
 
 Agora que o Grupo de Recursos foi criado, podemos prosseguir com a criação do Data Lake. Selecione o recurso <i>Data Lake Storage Gen1</i> e, em seguida, forneça as informações necessárias. É importante observar o nome da instância que você está criando, pois esse nome será utilizado para acessar o Data Lake por meio do Python. Certifique-se de escolher um nome significativo e memorável para facilitar o acesso e o gerenciamento do Data Lake posteriormente.
 
-![Criação do Azure Data Lake Storage Gen1](https://github.com/DemikFR/Data-Pipeline-Python-Azure-Data-Lake/assets/102700735/4608592d-c42c-461b-a50b-82dd7cf7e773)
+![Criação do Azure Data Lake Storage Gen1](https://github.com/DemikFR/Data-Pipeline-Python-Azure-Data-Lake/assets/102700735/a4f11faa-c1b3-4416-a93b-ef2d3ab85625)
 
 
 Após concluir a criação do Azure Data Lake Gen1, já será possível começar a utilizá-lo.
 
-![Interface Azure Data Lake](https://github.com/DemikFR/Data-Pipeline-Python-Azure-Data-Lake/assets/102700735/04471c09-94d2-43e2-8983-268f36aade0a)
+![Interface Azure Data Lake](https://github.com/DemikFR/Data-Pipeline-Python-Azure-Data-Lake/assets/102700735/94dfae99-5631-4aff-a38d-a2a817cb1837)
+
 
 
 
@@ -178,7 +179,8 @@ Note que em primeiro momento, será utilizado a biblioteca wget para realizar o 
    
 Por fim, os dados já estarão presentes no Azure Data Lake, pronto para os próximos procedimentos de análise.
 
-![Datasets no ADL](https://github.com/DemikFR/Data-Pipeline-Python-Azure-Data-Lake/assets/102700735/9b08477b-d96c-4feb-a843-bbf7124dc75b)
+![Datasets no ADL](https://github.com/DemikFR/Data-Pipeline-Python-Azure-Data-Lake/assets/102700735/d5e327b0-a8b8-4404-8977-6da95705b189)
+
 
 
 ## Agradecimentos
