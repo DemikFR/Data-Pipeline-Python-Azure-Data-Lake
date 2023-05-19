@@ -65,7 +65,7 @@ Para realizar este projeto, foi usado as seguintes ferramenta:
    ```sh
    git clone https://github.com/DemikFR/Data-Pipeline-Python-Azure-Data-Lake.git
    ```
-2. Instale todas as bibliotecas em seu Jupyter ou outra IDE usada
+2. Instale todas as bibliotecas em seu Python
    ```py
     pip install wget
     pip install azure-mgmt-resource
@@ -158,8 +158,27 @@ O segundo parâmetro é o "file_dl_name", que define o nome do arquivo no Azure 
 
 Por fim, o terceiro parâmetro é o "link_file", que no contexto desse pipeline é o link de download do dataset. É por meio desse caminho que a função de ingestão será capaz de localizar o arquivo a ser importado e realizar a operação de ingestão no Azure Data Lake.
 
+Note que em primeiro momento, será utilizado a biblioteca wget para realizar o download do dataset na pasta e depois subir o arquivo na nuvem, isso manterá a integridade dos dados.
 
+   ```py
+    def ingest(file_system, file_dl_name, link_file):
 
+      try:
+      # Download the Dataset
+        response = wget.download(link_file) # Baixar o dataset
+
+        ## Upload a file
+
+        multithread.ADLUploader(file_system, lpath=f'/content/{file_dl_name}', rpath=f'/Datasets_Safras/{file_dl_name}'
+                                , nthreads=64, overwrite=True) # Pega o arquivo baixado e realiza o upload para o Azure
+        print(f'O upload do arquivo {file_dl_name} foi efetuado com sucesso!')
+      except exception:
+        print(f'Erro! O upload do arquivo {file_dl_name} não foi bem sucedido!') # Em caso de algum erro ocorrer ao baixar ou enviar o dataset para o Azure
+   ```
+   
+Por fim, os dados já estarão presentes no Azure Data Lake, pronto para os próximos procedimentos de análise.
+
+![Datasets no ADL](https://github.com/DemikFR/Data-Pipeline-Python-Azure-Data-Lake/assets/102700735/9b08477b-d96c-4feb-a843-bbf7124dc75b)
 
 
 ## Agradecimentos
