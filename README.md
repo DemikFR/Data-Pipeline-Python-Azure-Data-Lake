@@ -1,7 +1,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <img src="https://github.com/DemikFR/Data-Pipeline-Python-Azure-Data-Lake/assets/102700735/9656d571-e6a0-439d-93d5-4ba537f0f523"/>
+  <img src="https://github.com/DemikFR/Data-Pipeline-Python-Azure-Data-Lake/assets/102700735/e8edbe09-c076-44e4-b927-9a649e81db55">
   <h1 align="center">Pipeline de Extração de Dados da Web para o Azure Data Lake</h1>
 
   <p align="center">
