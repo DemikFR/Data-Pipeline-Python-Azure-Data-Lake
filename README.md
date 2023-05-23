@@ -45,7 +45,7 @@
 
 O projeto foi originado por um desafio de minha graduação de banco de dados na FIAP (Faculdade de Informática e Administração), que consiste em pensar em um problema do agronegócio para ser resolvido utilizando uma plataforma de data lake.
 
-Para ser realizada o problema, foi escolhido usar o processo de ELT e o Azure Data Lake Gen1, pois além de realizar a análise do momento, os dados deverão ser reaproveitados no futuro.
+Para ser realizada a solução do problema, foi escolhido usar o processo de ELT e o Azure Data Lake Gen1, pois além de realizar a análise do momento, os dados deverão ser reaproveitados no futuro.
 
 
 ### Ferramentas
